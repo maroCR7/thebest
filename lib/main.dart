@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:thebest/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:thebest/screens/splash.dart';
 import 'package:thebest/services/get_data.dart';
