@@ -4,6 +4,7 @@ import 'package:thebest/screens/article_details.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:thebest/widgets/article_item.dart';
+import 'package:thebest/widgets/list_articles.dart';
 import 'package:thebest/widgets/loading.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,66 +21,59 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Provider.of<HomeProvider>(context).loading
-          ? Loading()
-      ///to check the type of the device
-          : CheckDeviceType(),
-    );
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth >= 900){
+      return Scaffold(
+        body: Provider.of<HomeProvider>(context).loading
+            ? Loading()
+        ///to check the type of the device
+            : HomeWidget(type: "desk",),
+      );
+    }else{
+      return Scaffold(
+        appBar:AppBar( backgroundColor: Colors.blueGrey,title: Text("Best"),),
+        body: Provider.of<HomeProvider>(context).loading
+            ? Loading()
+        ///to check the type of the device
+            : HomeWidget(type: "mobile"),
+      );
+    }
+
+  }
+}
+
+class HomeWidget extends StatelessWidget {
+  const HomeWidget({
+    Key? key ,required this.type
+  } ) : super(key: key);
+  final String type;
+  @override
+  Widget build(BuildContext context) {
+    return CheckDeviceType(type: type,);
   }
 }
 
 class CheckDeviceType extends StatelessWidget {
   const CheckDeviceType({
-    Key? key,
-  }) : super(key: key);
-
+    Key? key, required this.type
+  } ) : super(key: key);
+ final String type;
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth >= 900) {
+
+    if (type=="desk") {
       ///desktop
       return Row(
         children: [
           Expanded(flex: 1, child: Container()),
-          Expanded(flex: 3, child: ArticlesList()),
+          Expanded(flex: 3, child: ArticlesList(type:type)),
           Expanded(flex: 1, child: Container()),
         ],
       );
     } else {
       ///mobile
-      return ArticlesList();
+      return ArticlesList(type: type,);
     }
   }
 }
-///list of articles
-class ArticlesList extends StatelessWidget {
-  const ArticlesList({
-    Key? key,
 
-  }) : super(key: key);
-
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: Provider.of<HomeProvider>(context).homeModel!.results!.length,
-      physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, index) => GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ArticleDetailsScreen(
-                        article: Provider.of<HomeProvider>(context)
-                            .homeModel!
-                            .results![index],
-                      )));
-        },
-        child: ArticleItem(
-            article:
-                Provider.of<HomeProvider>(context).homeModel!.results![index]),
-      ),
-    );
-  }
-}
